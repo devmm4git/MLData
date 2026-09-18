@@ -1,0 +1,19 @@
+# ============================================================
+#  Levanta el EDA Workbench y lo mantiene VIVO.
+#    docker compose build      -> construye tu imagen con todos los requirements
+#    docker compose up -d      -> corre en segundo plano (no bloquea la terminal)
+#    docker compose down       -> lo apaga
+#  Acceso: http://localhost:10000/?token=eda-dev
+# ============================================================
+services:
+  eda:
+    build: .
+    image: eda-workbench:latest
+    container_name: eda-workbench
+    ports:
+      - "10000:8888"                     # navegador usa 10000 (izquierda); Jupyter vive en 8888
+    volumes:
+      - ./work:/home/jovyan/work         # tus notebooks y datos PERSISTEN aqui (en tu disco)
+    environment:
+      - JUPYTER_TOKEN=eda-dev            # token FIJO (cambialo por seguridad si compartes)
+    restart: unless-stopped              # revive tras crash o reinicio de la PC
