@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vision AI MVP Roadmap v1 — Análisis de video industrial local</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --bg: #f4f6f9; --bg2: #ffffff; --bg3: #eef1f5;
+  --border: rgba(15,23,42,0.09); --border2: rgba(15,23,42,0.16);
+  --text: #2b3440; --text2: #5b6878; --text3: #8592a3; --hi: #0d1117;
+  --green: #00967a; --blue: #1f6fd1; --purple: #8a3fd6; --amber: #b0700a;
+  --orange: #d4501c; --teal: #0b8aa3; --pink: #c03a7a; --lime: #5d8f12;
+  --grid: rgba(0,150,122,0.05);
+  --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #090b0e; --bg2: #0f1318; --bg3: #161b22;
+    --border: rgba(255,255,255,0.06); --border2: rgba(255,255,255,0.12);
+    --text: #c9d1db; --text2: #6b7a8d; --text3: #44556a; --hi: #ffffff;
+    --green: #00d4aa; --blue: #3b9eff; --purple: #a855f7; --amber: #f59e0b;
+    --orange: #ff6b35; --teal: #22d3ee; --pink: #f472b6; --lime: #a3e635;
+    --grid: rgba(0,212,170,0.025);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #090b0e; --bg2: #0f1318; --bg3: #161b22;
+  --border: rgba(255,255,255,0.06); --border2: rgba(255,255,255,0.12);
+  --text: #c9d1db; --text2: #6b7a8d; --text3: #44556a; --hi: #ffffff;
+  --green: #00d4aa; --blue: #3b9eff; --purple: #a855f7; --amber: #f59e0b;
+  --orange: #ff6b35; --teal: #22d3ee; --pink: #f472b6; --lime: #a3e635;
+  --grid: rgba(0,212,170,0.025);
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); background: var(--bg); }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 80px; overflow-x: hidden; }
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 40px 40px; pointer-events: none; z-index: 0;
+}
+.mix { --c: var(--green); }
+/* HEADER */
+header { position: relative; z-index: 1; padding: 52px 48px 40px; border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--green) 6%, transparent) 0%, transparent 100%); }
+.header-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.25em; color: var(--green); text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.header-eyebrow::before { content: ''; display: inline-block; width: 20px; height: 1px; background: var(--green); }
+.forge-h1 { font-family: var(--mono); font-size: 30px; font-weight: 600; color: var(--hi); line-height: 1.15; margin-bottom: 8px; }
+.forge-h1 em { color: var(--green); font-style: normal; }
+.version-badge { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 3px 10px; border-radius: 3px; margin-left: 12px;
+  border: 1px solid color-mix(in srgb, var(--green) 45%, transparent); color: var(--green); background: color-mix(in srgb, var(--green) 8%, transparent); vertical-align: middle; }
+.header-meta { display: flex; gap: 10px 24px; flex-wrap: wrap; margin-top: 18px; }
+.meta-item { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; color: var(--text2); }
+.dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+/* PROBLEM */
+.problem-box { position: relative; z-index: 1; margin: 36px 48px 0; border: 1px solid color-mix(in srgb, var(--green) 35%, transparent); border-radius: 8px;
+  background: color-mix(in srgb, var(--green) 4%, var(--bg)); padding: 24px 28px; display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 16px 32px; align-items: start; }
+.problem-box::before { content: 'PROBLEM STATEMENT'; position: absolute; top: -9px; left: 20px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; color: var(--green); background: var(--bg); padding: 0 8px; }
+.pb-label { font-family: var(--mono); font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.15em; padding-top: 2px; white-space: nowrap; }
+.pb-value { font-size: 13px; color: var(--text); }
+.pb-value strong { color: var(--hi); font-weight: 500; }
+/* KPI */
+.kpi-bar { position: relative; z-index: 1; margin: 28px 48px 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.kpi { border: 1px solid var(--border); border-radius: 8px; background: var(--bg2); padding: 16px 18px; }
+.kpi-value { font-family: var(--mono); font-size: 22px; font-weight: 600; color: var(--hi); line-height: 1; }
+.kpi-value span { font-size: 13px; color: var(--text2); font-weight: 400; }
+.kpi-label { font-size: 11px; color: var(--text2); margin-top: 5px; }
+/* LEGEND */
+.legend { position: relative; z-index: 1; margin: 28px 48px 0; border: 1px solid var(--border); border-radius: 8px; background: var(--bg2); padding: 20px 28px; }
+.legend-title { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; color: var(--text3); text-transform: uppercase; margin-bottom: 14px; }
+.legend-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 8px; }
+.legend-item { display: flex; align-items: flex-start; gap: 8px; }
+.legend-badge { flex-shrink: 0; margin-top: 2px; }
+.legend-name { font-size: 11px; color: var(--hi); font-weight: 500; }
+.legend-desc { font-size: 10px; color: var(--text2); line-height: 1.4; margin-top: 1px; }
+/* TIMELINE */
+.timeline { position: relative; z-index: 1; padding: 40px 48px 0; }
+.timeline-header { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--text2); text-transform: uppercase; margin-bottom: 28px; }
+/* PHASE */
+.phase { --pc: var(--green); margin-bottom: 28px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg2); }
+.phase.p1 { --pc: var(--green); } .phase.p2 { --pc: var(--blue); } .phase.p3 { --pc: var(--teal); } .phase.p4 { --pc: var(--amber); }
+.phase.p5 { --pc: var(--purple); } .phase.p6 { --pc: var(--orange); } .phase.p7 { --pc: var(--pink); } .phase.p8 { --pc: var(--lime); }
+.phase.stretch { border-style: dashed; }
+.phase-header { display: flex; align-items: stretch; border-bottom: 1px solid var(--border); }
+.phase-number { font-family: var(--mono); font-size: 11px; font-weight: 600; writing-mode: vertical-rl; text-orientation: mixed; padding: 16px 14px;
+  display: flex; align-items: center; justify-content: center; letter-spacing: 0.1em; min-width: 44px; border-right: 1px solid var(--border);
+  background: color-mix(in srgb, var(--pc) 9%, transparent); color: var(--pc); }
+.tag-badge { display: inline-block; font-family: var(--mono); font-size: 8px; padding: 2px 6px; border-radius: 2px; margin-left: 8px;
+  border: 1px solid color-mix(in srgb, var(--pc) 50%, transparent); color: var(--pc); background: color-mix(in srgb, var(--pc) 8%, transparent); vertical-align: middle; letter-spacing: 0.1em; }
+.phase-title-block { padding: 16px 20px; flex: 1; min-width: 0; }
+.phase-name { font-size: 16px; font-weight: 500; color: var(--hi); margin-bottom: 3px; }
+.phase-objective { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.phase-duration { font-family: var(--mono); font-size: 10px; padding: 18px 20px; white-space: nowrap; color: var(--text2); border-left: 1px solid var(--border); display: flex; align-items: flex-start; }
+/* TASKS */
+.tasks-grid { display: grid; grid-template-columns: 1fr 1fr; }
+.task-col { padding: 20px 24px; min-width: 0; }
+.task-col:first-child { border-right: 1px solid var(--border); }
+.col-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.col-label.infra { color: var(--amber); } .col-label.ml { color: var(--purple); } .col-label.data { color: var(--blue); }
+.col-label.ops { color: var(--teal); } .col-label.cv { color: var(--pink); } .col-label.arch { color: var(--green); }
+.task-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px; }
+.task-item > div:last-child { min-width: 0; }
+.task-bullet { width: 18px; height: 18px; border-radius: 3px; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 9px; font-weight: 600; background: color-mix(in srgb, var(--pc) 13%, transparent); color: var(--pc); }
+.task-title { font-size: 13px; color: var(--hi); font-weight: 500; margin-bottom: 2px; }
+.task-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.task-cmd { font-family: var(--mono); font-size: 10px; background: var(--bg3); border: 1px solid var(--border); border-radius: 3px; padding: 3px 7px; margin-top: 5px;
+  color: var(--green); display: block; max-width: 100%; overflow-x: auto; white-space: pre; }
+/* ROLES + DELIVERABLES */
+.role-row { padding: 12px 24px; border-top: 1px solid var(--border); background: var(--bg3); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.role-row-label, .del-label { font-family: var(--mono); font-size: 9px; color: var(--text3); letter-spacing: 0.15em; text-transform: uppercase; margin-right: 4px; }
+.badge { --bc: var(--green); font-family: var(--mono); font-size: 10px; padding: 3px 9px; border-radius: 3px; border: 1px solid color-mix(in srgb, var(--bc) 45%, transparent);
+  white-space: nowrap; color: var(--bc); background: color-mix(in srgb, var(--bc) 7%, transparent); }
+.badge.pm { --bc: var(--green); } .badge.cv { --bc: var(--pink); } .badge.ml { --bc: var(--orange); } .badge.de { --bc: var(--amber); }
+.badge.da { --bc: var(--teal); } .badge.mlops { --bc: var(--purple); } .badge.infra { --bc: var(--blue); }
+.deliverable-row { padding: 10px 24px; border-top: 1px solid var(--border); display: flex; gap: 6px 10px; flex-wrap: wrap; align-items: center; }
+.del-item { font-size: 11px; color: var(--text2); display: flex; align-items: center; gap: 5px; }
+.del-item::before { content: '✓'; font-family: var(--mono); font-size: 10px; color: var(--pc); }
+/* SPECIAL BOX */
+.special-box { margin: 16px 24px 4px; padding: 16px 20px; border: 1px solid color-mix(in srgb, var(--pc) 30%, transparent); border-radius: 6px; background: color-mix(in srgb, var(--pc) 4%, transparent); }
+.special-title { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; color: var(--pc); text-transform: uppercase; margin-bottom: 12px; }
+.special-layers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.special-layer { border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px; background: var(--bg3); border-top: 2px solid var(--lc, var(--pc)); }
+.layer-name { font-family: var(--mono); font-size: 10px; font-weight: 600; margin-bottom: 3px; color: var(--lc, var(--pc)); }
+.layer-tech { font-size: 10px; color: var(--text); margin-bottom: 3px; }
+.layer-desc { font-size: 10px; color: var(--text2); line-height: 1.45; }
+pre.json { font-family: var(--mono); font-size: 10.5px; line-height: 1.55; color: var(--text); background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; overflow-x: auto; }
+pre.json .k { color: var(--purple); } pre.json .s { color: var(--green); } pre.json .n { color: var(--amber); }
+/* ARCH MAP */
+.section-label { position: relative; z-index: 1; margin: 12px 48px 14px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--text2); text-transform: uppercase; }
+.arch-map { position: relative; z-index: 1; margin: 0 48px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg2); padding: 28px; }
+.arch-layers { display: flex; align-items: stretch; }
+.arch-layer { --lc: var(--green); flex: 1; min-width: 0; padding: 16px; border-radius: 6px; border: 1px solid color-mix(in srgb, var(--lc) 25%, transparent); background: color-mix(in srgb, var(--lc) 3%, transparent); }
+.arch-layer-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); color: var(--lc); }
+.l-edge { --lc: var(--green); } .l-ai { --lc: var(--purple); } .l-data { --lc: var(--teal); } .l-prod { --lc: var(--blue); }
+.arch-arrow { display: flex; align-items: center; justify-content: center; width: 28px; flex-shrink: 0; color: var(--text3); font-size: 16px; }
+.arch-component { font-family: var(--mono); font-size: 10px; padding: 5px 8px; border-radius: 3px; background: var(--bg3); border: 1px solid var(--border); color: var(--text2); margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+.chip { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; background: var(--lc); }
+/* RISKS */
+.risk-grid { position: relative; z-index: 1; margin: 0 48px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.risk { border: 1px solid var(--border); border-radius: 8px; background: var(--bg2); padding: 16px 18px; }
+.risk-name { font-size: 13px; color: var(--hi); font-weight: 500; margin-bottom: 4px; }
+.risk-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.risk-mit { font-size: 11px; color: var(--text); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+.risk-mit b { font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em; color: var(--green); font-weight: 500; text-transform: uppercase; margin-right: 4px; }
+footer { position: relative; z-index: 1; margin: 36px 48px 0; padding: 20px 0; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.1em; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+/* RESPONSIVE */
+@media (max-width: 980px) {
+  .legend-grid { grid-template-columns: repeat(2, 1fr); }
+  .special-layers { grid-template-columns: repeat(2, 1fr); }
+  .arch-layers { flex-direction: column; }
+  .arch-arrow { width: auto; height: 24px; transform: rotate(90deg); }
+  .risk-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 720px) {
+  header { padding: 36px 20px 28px; }
+  .forge-h1 { font-size: 23px; }
+  .problem-box, .kpi-bar, .legend, .arch-map, .risk-grid, .section-label, footer { margin-left: 16px; margin-right: 16px; }
+  .problem-box { grid-template-columns: 1fr; gap: 6px; padding: 22px 18px; }
+  .pb-value { margin-bottom: 8px; }
+  .kpi-bar { grid-template-columns: 1fr 1fr; }
+  .legend { padding: 18px; } .legend-grid { grid-template-columns: 1fr; }
+  .timeline { padding: 32px 16px 0; }
+  .phase-header { flex-wrap: wrap; }
+  .phase-number { writing-mode: horizontal-tb; min-width: 0; width: 100%; padding: 8px 16px; justify-content: flex-start; border-right: 0; border-bottom: 1px solid var(--border); }
+  .phase-duration { border-left: 0; padding: 0 20px 14px; width: 100%; }
+  .tasks-grid { grid-template-columns: 1fr; }
+  .task-col { padding: 18px; }
+  .task-col:first-child { border-right: 0; border-bottom: 1px solid var(--border); }
+  .role-row, .deliverable-row { padding-left: 18px; padding-right: 18px; }
+  .special-box { margin: 14px 14px 4px; padding: 14px; }
+  .special-layers { grid-template-columns: 1fr; }
+  .arch-map { padding: 18px; }
+  .risk-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">Vision AI MVP — Smart Cameras</div>
+  <h1 class="forge-h1">Análisis de video industrial<br><em>Local MVP Roadmap</em><span class="version-badge">v1.0</span></h1>
+  <div class="header-meta">
+    <span class="meta-item"><span class="dot" style="background:var(--green)"></span>Edge: MacBook Pro (Apple Silicon)</span>
+    <span class="meta-item"><span class="dot" style="background:var(--blue)"></span>Cámaras: simuladas → existentes vía RTSP</span>
+    <span class="meta-item"><span class="dot" style="background:var(--purple)"></span>IA: detectores + Qwen3-VL (Ollama)</span>
+    <span class="meta-item"><span class="dot" style="background:var(--teal)"></span>Datos: PostgreSQL + pgvector + Redis</span>
+    <span class="meta-item"><span class="dot" style="background:var(--amber)"></span>Alternativa open source a NVIDIA VSS</span>
+  </div>
+</header>
+
+<div class="problem-box">
+  <div class="pb-label">Problema</div>
+  <div class="pb-value"><strong>Las plantas ya tienen cámaras, pero solo graban.</strong> Nadie revisa el video hasta después de un incidente: faltas de EPP, salidas bloqueadas, desorden y defectos pasan desapercibidos. La solución oficial de NVIDIA exige hardware de centro de datos.</div>
+  <div class="pb-label">Objetivo</div>
+  <div class="pb-value">Convertir las cámaras existentes en <strong>sensores inteligentes</strong> que detecten eventos por dominio, los describan en lenguaje natural y permitan preguntar qué pasó. Todo en local, sin comprar hardware nuevo para el MVP.</div>
+</div>
+
+<div class="kpi-bar">
+  <div class="kpi"><div class="kpi-value">4<span> dominios</span></div><div class="kpi-label">EPP · Salidas · 5S · Calidad</div></div>
+  <div class="kpi"><div class="kpi-value">&lt;10<span>s</span></div><div class="kpi-label">Evento crítico → alerta</div></div>
+  <div class="kpi"><div class="kpi-value">4<span> cámaras</span></div><div class="kpi-label">Simuladas en el MVP</div></div>
+  <div class="kpi"><div class="kpi-value">~4<span> semanas</span></div><div class="kpi-label">8 fases hasta producción</div></div>
+</div>
+
+<div class="legend">
+  <div class="legend-title">Roles en acción</div>
+  <div class="legend-grid">
+    <div class="legend-item"><span class="badge pm legend-badge">AI PM</span><div><div class="legend-name">AI Product Manager</div><div class="legend-desc">Define dominios, reglas de negocio, KPIs y acepta entregables</div></div></div>
+    <div class="legend-item"><span class="badge cv legend-badge">CV ENG</span><div><div class="legend-name">Computer Vision Engineer</div><div class="legend-desc">Ingesta de video, detectores, tracking, zonas y fine-tuning</div></div></div>
+    <div class="legend-item"><span class="badge ml legend-badge">ML ENG</span><div><div class="legend-name">ML Engineer</div><div class="legend-desc">Sirve VLM/LLM, prompts, cuantización y latencia</div></div></div>
+    <div class="legend-item"><span class="badge de legend-badge">DATA ENG</span><div><div class="legend-name">Data Engineer</div><div class="legend-desc">Colas, workers, almacenamiento de eventos y clips</div></div></div>
+    <div class="legend-item"><span class="badge da legend-badge">DATA ARCH</span><div><div class="legend-name">Data Architect</div><div class="legend-desc">Esquema, búsqueda híbrida, retención y particiones</div></div></div>
+    <div class="legend-item"><span class="badge mlops legend-badge">MLOPS</span><div><div class="legend-name">MLOps Engineer</div><div class="legend-desc">Versionado de modelos, métricas, benchmark y despliegue</div></div></div>
+    <div class="legend-item"><span class="badge infra legend-badge">INFRA</span><div><div class="legend-name">Infra / Networking</div><div class="legend-desc">Docker, MediaMTX, red de cámaras, VPN y GPU</div></div></div>
+  </div>
+</div>
+
+<div class="timeline">
+  <div class="timeline-header">Fases del MVP — roadmap v1.0</div>
+
+  <!-- FASE 01 -->
+  <div class="phase p1">
+    <div class="phase-header">
+      <div class="phase-number">FASE 01</div>
+      <div class="phase-title-block">
+        <div class="phase-name">Entorno local + cámaras simuladas</div>
+        <div class="phase-objective">Levantar la infraestructura base en la Mac y simular 4 cámaras RTSP con videos en bucle, para desarrollar sin depender de la planta.</div>
+      </div>
+      <div class="phase-duration">Semana 1 · días 1–2</div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task-col">
+        <div class="col-label infra">⬡ Infraestructura</div>
+        <div class="task-item"><div class="task-bullet">01</div><div><div class="task-title">Verificar hardware y herramientas</div><div class="task-desc">Confirmar chip y RAM (32 GB+ recomendado). Homebrew, Docker Desktop u OrbStack, Python 3.11+ con uv, ffmpeg.</div><div class="task-cmd">sysctl hw.memsize && brew install ffmpeg uv</div></div></div>
+        <div class="task-item"><div class="task-bullet">02</div><div><div class="task-title">docker-compose base</div><div class="task-desc">PostgreSQL 16 + pgvector, Redis y MediaMTX con grabación habilitada por segmentos.</div><div class="task-cmd">docker compose up -d</div></div></div>
+        <div class="task-item"><div class="task-bullet">03</div><div><div class="task-title">Repositorio y configuración</div><div class="task-desc">Estructura del repo, .env.example, cameras.yaml, zones.yaml y rules.yaml. Sin credenciales en código.</div></div></div>
+      </div>
+      <div class="task-col">
+        <div class="col-label data">◆ Datos / Simulación</div>
+        <div class="task-item"><div class="task-bullet">04</div><div><div class="task-title">Videos de prueba industriales</div><div class="task-desc">4 clips de uso libre: piso de planta con personal, pasillo con salida de emergencia, área de trabajo y línea de producción.</div></div></div>
+        <div class="task-item"><div class="task-bullet">05</div><div><div class="task-title">Script de cámaras simuladas</div><div class="task-desc">Publica cada MP4 en bucle como stream RTSP en MediaMTX: cam1 a cam4.</div><div class="task-cmd">ffmpeg -re -stream_loop -1 -i planta.mp4 -c copy -f rtsp rtsp://localhost:8554/cam1</div></div></div>
+      </div>
+    </div>
+    <div class="role-row"><span class="role-row-label">Roles activos →</span><span class="badge infra">INFRA</span><span class="badge cv">CV ENG</span><span class="badge pm">AI PM</span></div>
+    <div class="deliverable-row"><span class="del-label">Entregable →</span><span class="del-item">Postgres, Redis y MediaMTX corriendo</span><span class="del-item">4 streams visibles en VLC</span><span class="del-item">Grabación activa en disco</span></div>
+  </div>
+
+  <!-- FASE 02 -->
+  <div class="phase p2">
+    <div class="phase-header">
+      <div class="phase-number">FASE 02</div>
+      <div class="phase-title-block">
+        <div class="phase-name">Ingesta y fragmentación de video</div>
+        <div class="phase-objective">Leer cada cámara, decodificar cada frame una sola vez, muestrearlo según la configuración y cortar fragmentos con clip y miniatura.</div>
+      </div>
+      <div class="phase-duration">Semana 1</div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task-col">
+        <div class="col-label cv">◉ Video</div>
+        <div class="task-item"><div class="task-bullet">01</div><div><div class="task-title">Lector RTSP por cámara</div><div class="task-desc">PyAV o GStreamer con decodificación VideoToolbox. Reconexión automática si el stream cae.</div></div></div>
+        <div class="task-item"><div class="task-bullet">02</div><div><div class="task-title">Fan-out de frames</div><div class="task-desc">Un frame decodificado se reparte a los detectores activos de esa cámara, cada uno a su propia frecuencia.</div></div></div>
+        <div class="task-item"><div class="task-bullet">03</div><div><div class="task-title">Fragmentos de 10–20 s</div><div class="task-desc">Clip MP4 + miniatura + 4–8 frames clave por fragmento, con timestamp de inicio y fin.</div></div></div>
+      </div>
+      <div class="task-col">
+        <div class="col-label data">◆ Datos</div>
+        <div class="task-item"><div class="task-bullet">04</div><div><div class="task-title">Archivo vs. stream</div><div class="task-desc">La misma interfaz acepta un MP4 o una URL RTSP, para probar con video grabado y pasar a vivo sin cambiar código.</div></div></div>
+        <div class="task-item"><div class="task-bullet">05</div><div><div class="task-title">Métricas de ingesta</div><div class="task-desc">fps reales por cámara, frames descartados y reconexiones en logs estructurados.</div><div class="task-cmd">uv run python -m src.ingest --config config/cameras.yaml</div></div></div>
+      </div>
+    </div>
+    <div class="role-row"><span class="role-row-label">Roles activos →</span><span class="badge cv">CV ENG</span><span class="badge de">DATA ENG</span></div>
+    <div class="deliverable-row"><span class="del-label">Entregable →</span><span class="del-item">Fragmentos y miniaturas en data/</span><span class="del-item">Mismo pipeline para archivo y RTSP</span><span class="del-item">Métricas de fps por cámara</span></div>
+  </div>
+
+  <!-- FASE 03 -->
+  <div class="phase p3">
+    <div class="phase-header">
+      <div class="phase-number">FASE 03</div>
+      <div class="phase-title-block">
+        <div class="phase-name">Detección general, zonas y motor de reglas<span class="tag-badge">DOMINIO SALIDAS</span></div>
+        <div class="phase-objective">Detector preentrenado + tracking + zonas poligonales. Primer dominio funcionando de punta a punta sin entrenar nada: salidas bloqueadas.</div>
+      </div>
+      <div class="phase-duration">Semana 1–2</div>
+    </div>
+    <div class="special-box">
+      <div class="special-title">Arquitectura multimodelo — 4 dominios</div>
+      <div class="special-layers">
+        <div class="special-layer" style="--lc:var(--amber)"><div class="layer-name">Seguridad EPP</div><div class="layer-tech">Detector con fine-tuning</div><div class="layer-desc">Varias veces por segundo. Cámaras de piso y accesos.</div></div>
+        <div class="special-layer" style="--lc:var(--teal)"><div class="layer-name">Salidas</div><div class="layer-tech">Zona + detector general</div><div class="layer-desc">Cada pocos segundos. Solo cámaras que ven salidas.</div></div>
+        <div class="special-layer" style="--lc:var(--pink)"><div class="layer-name">Orden 5S</div><div class="layer-tech">Referencia + VLM checklist</div><div class="layer-desc">Cada varios minutos. Áreas de trabajo.</div></div>
+        <div class="special-layer" style="--lc:var(--lime)"><div class="layer-name">Calidad</div><div class="layer-tech">Detección de anomalías</div><div class="layer-desc">Por evento. Cámara dedicada en la línea.</div></div>
+      </div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task-col">
+        <div class="col-label cv">◉ Visión</div>
+        <div class="task-item"><div class="task-bullet">01</div><div><div class="task-title">Interfaz Detector</div><div class="task-desc">Detector.detect(frame) → list[Detection]. Implementación MVP con Ultralytics (AGPL) y alternativa RT-DETR de Transformers (Apache 2.0).</div></div></div>
+        <div class="task-item"><div class="task-bullet">02</div><div><div class="task-title">Tracking + zonas</div><div class="task-desc">ByteTrack y zonas poligonales con la librería supervision. Polígono de la salida definido en zones.yaml.</div></div></div>
+        <div class="task-item"><div class="task-bullet">03</div><div><div class="task-title">Backend MPS</div><div class="task-desc">Inferencia en la GPU de Apple Silicon; medir latencia por frame.</div></div></div>
+      </div>
+      <div class="task-col">
+        <div class="col-label ops">⬡ Reglas / Eventos</div>
+        <div class="task-item"><div class="task-bullet">04</div><div><div class="task-title">Motor de reglas declarativo</div><div class="task-desc">Reglas en rules.yaml: clase, zona, duración mínima, horario. Ejemplo: objeto en salida &gt; 30 s → evento crítico.</div></div></div>
+        <div class="task-item"><div class="task-bullet">05</div><div><div class="task-title">Eventos etiquetados en Redis</div><div class="task-desc">Cada evento con dominio, cámara, severidad y fragmento. Las alertas críticas salen directo, sin esperar al VLM.</div></div></div>
+        <div class="task-item"><div class="task-bullet">06</div><div><div class="task-title">Guardar todas las detecciones</div><div class="task-desc">Clase, confianza, caja y track_id en Postgres, aunque no pasen al VLM.</div></div></div>
+      </div>
+    </div>
+    <div class="role-row"><span class="role-row-label">Roles activos →</span><span class="badge cv">CV ENG</span><span class="badge pm">AI PM</span><span class="badge de">DATA ENG</span></div>
+    <div class="deliverable-row"><span class="del-label">Entregable →</span><span class="del-item">Evento "salidas" al bloquear la zona</span><span class="del-item">Alerta crítica en &lt;10 s</span><span class="del-item">Detecciones persistidas</span></div>
+  </div>
+
+  <!-- FASE 04 -->
+  <div class="phase p4">
+    <div class="phase-header">
+      <div class="phase-number">FASE 04</div>
+      <div class="phase-title-block">
+        <div class="phase-name">Seguridad EPP — modelo especializado<span class="tag-badge">FINE-TUNING</span></div>
+        <div class="phase-objective">Entrenar un detector de cascos y chalecos y combinarlo con el detector de personas para generar eventos de incumplimiento.</div>
+      </div>
+      <div class="phase-duration">Semana 2</div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task-col">
+        <div class="col-label ml">◈ Modelo</div>
+        <div class="task-item"><div class="task-bullet">01</div><div><div class="task-title">Prueba rápida sin entrenar</div><div class="task-desc">Validar la idea con un detector de vocabulario abierto (YOLO-World / YOLOE) con prompts "casco" y "chaleco".</div></div></div>
+        <div class="task-item"><div class="task-bullet">02</div><div><div class="task-title">Dataset de EPP</div><div class="task-desc">Dataset público de EPP, revisando licencia. Incluir clase "persona" para evitar el olvido de clases.</div></div></div>
+        <div class="task-item"><div class="task-bullet">03</div><div><div class="task-title">Fine-tuning y evaluación</div><div class="task-desc">Entrenamiento en MPS o GPU rentada por horas. Reportar mAP por clase en validación.</div></div></div>
+      </div>
+      <div class="task-col">
+        <div class="col-label ops">⬡ Integración</div>
+        <div class="task-item"><div class="task-bullet">04</div><div><div class="task-title">Asociación persona ↔ EPP</div><div class="task-desc">Por cada track de persona, verificar si hay casco en la región de la cabeza y chaleco en el torso.</div></div></div>
+        <div class="task-item"><div class="task-bullet">05</div><div><div class="task-title">Regla anti-ruido</div><div class="task-desc">Evento solo si el incumplimiento persiste N frames, para evitar falsos positivos por oclusión.</div></div></div>
+        <div class="task-item"><div class="task-bullet">06</div><div><div class="task-title">Versionado del modelo</div><div class="task-desc">Pesos, métricas y dataset versionados; el modelo activo se elige en config.</div></div></div>
+      </div>
+    </div>
+    <div class="role-row"><span class="role-row-label">Roles activos →</span><span class="badge ml">ML ENG</span><span class="badge cv">CV ENG</span><span class="badge mlops">MLOPS</span></div>
+    <div class="deliverable-row"><span class="del-label">Entregable →</span><span class="del-item">Modelo EPP v1 con mAP reportado</span><span class="del-item">Evento "epp" por persona sin casco/chaleco</span><span class="del-item">Dos modelos corriendo en paralelo</span></div>
+  </div>
+
+  <!-- FASE 05 -->
+  <div class="phase p5">
+    <div class="phase-header">
+      <div class="phase-number">FASE 05</div>
+      <div class="phase-title-block">
+        <div class="phase-name">VLM + almacenamiento semántico</div>
+        <div class="phase-objective">Convertir cada evento en una descripción estructurada con el VLM, generar su embedding y guardarlo junto con las detecciones y la ruta del clip.</div>
+      </div>
+      <div class="phase-duration">Semana 2</div>
+    </div>
+    <div class="special-box">
+      <div class="special-title">Salida del VLM — JSON validado con Pydantic</div>
+<pre class="json">{
+  <span class="k">"dominio"</span>: <span class="s">"epp"</span>,
+  <span class="k">"descripcion"</span>: <span class="s">"Operario sin casco cruza el pasillo junto al montacargas"</span>,
+  <span class="k">"personas"</span>: <span class="n">1</span>,
+  <span class="k">"objetos"</span>: [<span class="s">"montacargas"</span>, <span class="s">"tarimas"</span>],
+  <span class="k">"acciones"</span>: [<span class="s">"caminar"</span>, <span class="s">"cruzar zona de tránsito"</span>],
+  <span class="k">"anomalia"</span>: <span class="n">true</span>,
+  <span class="k">"relevancia"</span>: <span class="n">0.9</span>
+}</pre>
+    </div>
+    <div class="tasks-grid">
+      <div class="task-col">
+        <div class="col-label ml">◈ Modelos</div>
+        <div class="task-item"><div class="task-bullet">01</div><div><div class="task-title">Servir el VLM</div><div class="task-desc">Qwen3-VL 8B cuantizado en Ollama (o mlx-vlm). API compatible con OpenAI para migrar a vLLM sin cambiar código.</div><div class="task-cmd">ollama serve  # verificar tag exacto de qwen3-vl</div></div></div>
+        <div class="task-item"><div class="task-bullet">02</div><div><div class="task-title">Prompts por dominio</div><div class="task-desc">Un prompt por dominio en prompts/, con contexto de YOLO y ejemplos de salida.</div></div></div>
+        <div class="task-item"><div class="task-bullet">03</div><div><div class="task-title">Worker con reintentos</div><div class="task-desc">Consume Redis, envía 4–8 frames, valida JSON y reintenta si falla. Mide latencia por fragmento.</div></div></div>
+      </div>
+      <div class="task-col">
+        <div class="col-label data">◆ Almacenamiento</div>
+        <div class="task-item"><div class="task-bullet">04</div><div><div class="task-title">Esquema de eventos</div><div class="task-desc">Cámara, dominio, inicio/fin, descripción, JSON, embedding, ruta del clip y miniatura. Particionado por fecha.</div></div></div>
+        <div class="task-item"><div class="task-bullet">05</div><div><div class="task-title">Embeddings + índice HNSW</div><div class="task-desc">bge-m3 local; índice HNSW en pgvector e índice full-text para nombres y placas.</div></div></div>
+        <div class="task-item"><div class="task-bullet">06</div><div><div class="task-title">Muestreo de respaldo</div><div class="task-desc">Un fragmento por cámara cada 5–10 min al VLM aunque no haya eventos, como línea base.</div></div></div>
+      </div>
+    </div>
+    <div class="role-row"><span class="role-row-label">Roles activos →</span><span class="badge ml">ML ENG</span><span class="badge da">DATA ARCH</span><span class="badge de">DATA ENG</span></div>
+    <div class="deliverable-row"><span class="del-label">Entregable →</span><span class="del-item">Cada evento con descripción y embedding</span><span class="del-item">Latencia del VLM medida</span><span class="del-item">Cola estable sin crecer</span></div>
+  </div>
+
+  <!-- FASE 06 -->
+  <div class="phase p6">
+    <div class="phase-header">
+      <div class="phase-number">FASE 06</div>
+      <div class="phase-title-block">
+        <div class="phase-name">RAG, interfaz y alertas</div>
+        <div class="phase-objective">Interfaz para operar el sistema: alertas en vivo, timeline de eventos con clip y chat que responde preguntas citando los eventos.</div>
+      </div>
+      <div class="phase-duration">Semana 3</div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task-col">
+        <div class="col-label data">◆ Búsqueda</div>
+        <div class="task-item"><div class="task-bullet">01</div><div><div class="task-title">Búsqueda híbrida</div><div class="task-desc">Similitud vectorial + filtros SQL (cámara, dominio, rango de tiempo) + full-text en una sola consulta.</div></div></div>
+        <div class="task-item"><div class="task-bullet">02</div><div><div class="task-title">LLM local</div><div class="task-desc">Modelo de texto ~8B en Ollama que responde solo con base en los eventos recuperados y los cita.</div></div></div>
+        <div class="task-item"><div class="task-bullet">03</div><div><div class="task-title">Preguntas de conteo</div><div class="task-desc">Consultas sobre detecciones de YOLO ("¿cuántas personas entraron hoy?") resueltas con SQL directo.</div></div></div>
+      </div>
+      <div class="task-col">
+        <div class="col-label arch">◇ Interfaz</div>
+        <div class="task-item"><div class="task-bullet">04</div><div><div class="task-title">App Streamlit</div><div class="task-desc">Tres vistas: alertas en vivo, timeline filtrable por dominio y cámara, y chat con reproducción del clip.</div><div class="task-cmd">uv run streamlit run src/ui/app.py</div></div></div>
+        <div class="task-item"><div class="task-bullet">05</div><div><div class="task-title">Canal de alertas</div><div class="task-desc">Alertas críticas a un canal de mensajería (por ejemplo Telegram) con miniatura.</div></div></div>
+      </div>
+    </div>
+    <div class="role-row"><span class="role-row-label">Roles activos →</span><span class="badge da">DATA ARCH</span><span class="badge ml">ML ENG</span><span class="badge pm">AI PM</span></div>
+    <div class="deliverable-row"><span class="del-label">Entregable →</span><span class="del-item">"¿Hubo personas sin casco en cam2 la última hora?" responde con clips</span><span class="del-item">Alertas en tiempo real</span></div>
+  </div>
+
+  <!-- FASE 07 -->
+  <div class="phase p7 stretch">
+    <div class="phase-header">
+      <div class="phase-number">FASE 07</div>
+      <div class="phase-title-block">
+        <div class="phase-name">Dominios 5S y Calidad<span class="tag-badge">STRETCH</span></div>
+        <div class="phase-objective">Agregar los dominios que no son de detección clásica: orden y limpieza por comparación con referencia, y defectos por detección de anomalías.</div>
+      </div>
+      <div class="phase-duration">Semana 3–4</div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task-col">
+        <div class="col-label cv">◉ Orden 5S</div>
+        <div class="task-item"><div class="task-bullet">01</div><div><div class="task-title">Imagen de referencia por área</div><div class="task-desc">Foto del área en buen estado; snapshot periódico y comparación de diferencias por zona.</div></div></div>
+        <div class="task-item"><div class="task-bullet">02</div><div><div class="task-title">Checklist con el VLM</div><div class="task-desc">El VLM evalúa el snapshot contra un checklist 5S y devuelve puntaje y hallazgos en JSON.</div></div></div>
+      </div>
+      <div class="task-col">
+        <div class="col-label ml">◈ Calidad</div>
+        <div class="task-item"><div class="task-bullet">03</div><div><div class="task-title">Detección de anomalías</div><div class="task-desc">Anomalib entrenado solo con piezas buenas; marca lo que se desvía. Validar licencia del dataset de ejemplo.</div></div></div>
+        <div class="task-item"><div class="task-bullet">04</div><div><div class="task-title">Requisitos de cámara</div><div class="task-desc">Documentar resolución, distancia e iluminación necesarias; una cámara de vigilancia general rara vez ve defectos pequeños.</div></div></div>
+      </div>
+    </div>
+    <div class="role-row"><span class="role-row-label">Roles activos →</span><span class="badge cv">CV ENG</span><span class="badge ml">ML ENG</span><span class="badge pm">AI PM</span></div>
+    <div class="deliverable-row"><span class="del-label">Entregable →</span><span class="del-item">Eventos "5s" y "calidad" en la interfaz</span><span class="del-item">Requisitos de cámara para calidad</span></div>
+  </div>
+
+  <!-- FASE 08 -->
+  <div class="phase p8">
+    <div class="phase-header">
+      <div class="phase-number">FASE 08</div>
+      <div class="phase-title-block">
+        <div class="phase-name">Cámaras reales + migración a GPU</div>
+        <div class="phase-objective">Conectar las cámaras ya instaladas en planta, medir capacidad real y preparar la migración del VLM a GPU NVIDIA.</div>
+      </div>
+      <div class="phase-duration">Semana 4+</div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task-col">
+        <div class="col-label infra">⬡ Cámaras existentes</div>
+        <div class="task-item"><div class="task-bullet">01</div><div><div class="task-title">Inventario y acceso</div><div class="task-desc">Marca, IP, credenciales, códec y si están detrás de NVR/DVR. Acceso por misma VLAN o VPN; nunca puertos abiertos a internet.</div></div></div>
+        <div class="task-item"><div class="task-bullet">02</div><div><div class="task-title">URLs RTSP y substream</div><div class="task-desc">Descubrir con ONVIF Device Manager, probar con ffprobe y usar el substream para la IA.</div><div class="task-cmd">ffprobe rtsp://usuario:clave@IP:554/Streams/Channels/102</div></div></div>
+        <div class="task-item"><div class="task-bullet">03</div><div><div class="task-title">Privacidad</div><div class="task-desc">Coordinar con TI y seguridad; aviso de privacidad de videovigilancia y política de retención.</div></div></div>
+      </div>
+      <div class="task-col">
+        <div class="col-label ops">⬡ Producción</div>
+        <div class="task-item"><div class="task-bullet">04</div><div><div class="task-title">Benchmark de capacidad</div><div class="task-desc">Fragmentos/min que entran vs. que el VLM procesa, profundidad de cola y memoria. Dimensionar con datos.</div></div></div>
+        <div class="task-item"><div class="task-bullet">05</div><div><div class="task-title">Migración a NVIDIA</div><div class="task-desc">vLLM en lugar de Ollama, NVDEC para decodificar, en servidor on-premise o GPU L4 en GCP. Solo cambia la configuración.</div></div></div>
+        <div class="task-item"><div class="task-bullet">06</div><div><div class="task-title">Licencias para cliente</div><div class="task-desc">Cambiar el detector a la implementación Apache 2.0 o adquirir licencia comercial antes de entregar.</div></div></div>
+      </div>
+    </div>
+    <div class="role-row"><span class="role-row-label">Roles activos →</span><span class="badge infra">INFRA</span><span class="badge mlops">MLOPS</span><span class="badge pm">AI PM</span><span class="badge cv">CV ENG</span></div>
+    <div class="deliverable-row"><span class="del-label">Entregable →</span><span class="del-item">1–2 cámaras reales en el pipeline</span><span class="del-item">Reporte de capacidad y hardware</span><span class="del-item">Plan de despliegue en producción</span></div>
+  </div>
+</div>
+
+<div class="section-label">Mapa de arquitectura — MVP local → producción</div>
+<div class="arch-map">
+  <div class="arch-layers">
+    <div class="arch-layer l-edge">
+      <div class="arch-layer-label">Edge — MacBook Pro</div>
+      <div class="arch-component"><span class="chip"></span>Cámaras simuladas (ffmpeg)</div>
+      <div class="arch-component"><span class="chip"></span>MediaMTX + grabación</div>
+      <div class="arch-component"><span class="chip"></span>Lector PyAV / GStreamer</div>
+      <div class="arch-component"><span class="chip"></span>Detector general + tracking</div>
+      <div class="arch-component"><span class="chip"></span>Detector EPP</div>
+      <div class="arch-component"><span class="chip"></span>Motor de reglas</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-layer l-ai">
+      <div class="arch-layer-label">IA local — Ollama</div>
+      <div class="arch-component"><span class="chip"></span>Qwen3-VL 8B (VLM)</div>
+      <div class="arch-component"><span class="chip"></span>Prompts por dominio</div>
+      <div class="arch-component"><span class="chip"></span>bge-m3 embeddings</div>
+      <div class="arch-component"><span class="chip"></span>LLM ~8B (RAG)</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-layer l-data">
+      <div class="arch-layer-label">Datos — Docker</div>
+      <div class="arch-component"><span class="chip"></span>Redis Streams (cola)</div>
+      <div class="arch-component"><span class="chip"></span>Postgres + pgvector</div>
+      <div class="arch-component"><span class="chip"></span>Clips y miniaturas</div>
+      <div class="arch-component"><span class="chip"></span>Streamlit + alertas</div>
+    </div>
+    <div class="arch-arrow">⇢</div>
+    <div class="arch-layer l-prod">
+      <div class="arch-layer-label">Producción</div>
+      <div class="arch-component"><span class="chip"></span>Cámaras existentes RTSP</div>
+      <div class="arch-component"><span class="chip"></span>GPU NVIDIA + NVDEC</div>
+      <div class="arch-component"><span class="chip"></span>vLLM (batching)</div>
+      <div class="arch-component"><span class="chip"></span>On-premise o GCP L4</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-label" style="margin-top:36px">Riesgos y mitigación</div>
+<div class="risk-grid">
+  <div class="risk"><div class="risk-name">Puntos ciegos del filtro</div><div class="risk-desc">El VLM solo ve lo que el detector deja pasar.</div><div class="risk-mit"><b>Mitiga</b>Detecciones guardadas, muestreo de respaldo y reprocesamiento desde la grabación.</div></div>
+  <div class="risk"><div class="risk-name">Capacidad del VLM</div><div class="risk-desc">Si entran más fragmentos de los que procesa, la cola crece sin control.</div><div class="risk-mit"><b>Mitiga</b>Frecuencias por dominio, reglas más estrictas, menos frames y benchmark antes de comprar hardware.</div></div>
+  <div class="risk"><div class="risk-name">Licencias</div><div class="risk-desc">Ultralytics es AGPL-3.0 y algunos datasets prohíben uso comercial.</div><div class="risk-mit"><b>Mitiga</b>Detector detrás de interfaz con alternativa Apache 2.0; revisar cada dataset.</div></div>
+  <div class="risk"><div class="risk-name">Calidad de descripciones</div><div class="risk-desc">Todo el RAG depende de lo que el VLM describe.</div><div class="risk-mit"><b>Mitiga</b>Prompts por dominio, JSON validado e iteración con video real del cliente.</div></div>
+  <div class="risk"><div class="risk-name">Cámaras existentes</div><div class="risk-desc">Ángulo, resolución o códec pueden no servir para todos los dominios.</div><div class="risk-mit"><b>Mitiga</b>Inventario previo, substream para IA y cámara dedicada solo para calidad.</div></div>
+  <div class="risk"><div class="risk-name">Privacidad</div><div class="risk-desc">El video de personas es dato personal.</div><div class="risk-mit"><b>Mitiga</b>Procesamiento local, retención definida y aviso de privacidad.</div></div>
+</div>
+
+<footer>
+  <span>Vision AI MVP Roadmap v1.0 — Análisis de video industrial // MacBook Pro → GPU NVIDIA</span>
+  <span>8 fases · 7 roles · 4 dominios · alternativa open source a NVIDIA VSS</span>
+</footer>
+
+</body>
+</html>
