@@ -1,0 +1,5 @@
+work/
+*.ipynb_checkpoints
+__pycache__/
+*.lock.txt
+.git/

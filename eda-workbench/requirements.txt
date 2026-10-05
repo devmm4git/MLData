@@ -1,0 +1,39 @@
+# ============================================================
+#  SOLIDOS - instalacion confiable sobre la imagen base.
+#  (pandas/numpy/scipy/statsmodels/matplotlib/seaborn/sklearn/jupyter
+#   YA vienen en datascience-notebook; pip los vera satisfechos.)
+# ============================================================
+
+# --- Core: tabla y estadistica (Gates 2, 4, 5) ---
+pandas
+numpy
+scipy
+statsmodels            # VIF, ADF, ACF/PACF, seasonal_decompose
+
+# --- Visualizacion (Pasos 3, 5, 6) ---
+matplotlib
+seaborn
+plotly
+
+# --- Datos faltantes (Gate 2) ---
+missingno              # msno.matrix / bar / heatmap / dendrogram
+
+# --- Senal y seleccion de features (Gate 4) ---
+scikit-learn           # mutual_info, clustering, GroupKFold, baseline, metricas
+ppscore                # poder predictivo no lineal
+
+# --- Supervivencia / censura pura-python (Gate 6) ---
+lifelines
+
+# --- Validacion de datos reproducible (Gates 1-2 hacia produccion) ---
+pandera
+great-expectations
+
+# --- Escala: datos que no caben en RAM (Paso 0 / Gate 1) ---
+polars
+pyarrow                # parquet
+
+# --- Notebook / kernel ---
+jupyterlab
+ipykernel
+ipywidgets             # barras de progreso

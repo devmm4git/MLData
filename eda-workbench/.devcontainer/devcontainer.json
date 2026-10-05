@@ -1,0 +1,21 @@
+{
+  "name": "EDA Workbench",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
+  "workspaceFolder": "/home/jovyan/work",
+  "mounts": [
+    "source=${localWorkspaceFolder}/work,target=/home/jovyan/work,type=bind"
+  ],
+  "remoteUser": "jovyan",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter"
+      ]
+    }
+  }
+}

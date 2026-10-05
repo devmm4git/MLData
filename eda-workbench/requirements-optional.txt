@@ -1,0 +1,8 @@
+# ============================================================
+#  FRAGILES - instalacion best-effort (pueden fallar sin tumbar el build).
+#  Si los necesitas y fallan, la via mas limpia es un env aparte solo para ellos.
+# ============================================================
+
+ydata-profiling        # OJO: pins estrechos, sensible a la version de pandas
+sweetviz               # tambien sensible a pandas
+scikit-survival        # compila C/C++ (osqp/ecos); import sksurv
